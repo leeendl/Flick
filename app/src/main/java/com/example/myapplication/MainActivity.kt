@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         var reKana by remember { mutableStateOf(kana.random()) }
                         Text(
-                            text = reKana, fontSize = 60.sp, // @todo
+                            text = reKana, fontSize = 60.sp,
                             modifier = Modifier
                                 .border(3.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
                                 .padding(9.dp)
@@ -82,10 +84,12 @@ class MainActivity : ComponentActivity() {
                                     userInput = ""
                                 }
                             },
-                            textStyle = TextStyle(fontSize = 30.sp), // @todo
+                            textStyle = TextStyle(fontSize = 38.sp, textAlign = TextAlign.Center),
+                            isError = userInput != reKana && userInput.isNotEmpty(),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
-                                .padding(26.dp),
+                                .padding(32.dp)
+                                .width(reKana.length.dp * 60),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
