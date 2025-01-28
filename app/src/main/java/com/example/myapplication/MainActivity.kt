@@ -6,11 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,6 +26,28 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    var settings by remember { mutableStateOf(false) }
+                    TopAppBar(
+                        title = { },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { settings = true },
+                                modifier = Modifier.padding(start = 16.dp, top = 12.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Settings,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+                        }
+                    )
+                    if (settings) {
+                        AlertDialog(
+                            confirmButton = { },
+                            onDismissRequest = { settings = false }
+                        )
+                    }
                     val kana = listOf("きょう", "ともだち", "ひる") // ...
                     Column(
                         modifier = Modifier.fillMaxSize(),
