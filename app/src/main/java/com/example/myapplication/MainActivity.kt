@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            var amoled by remember { mutableStateOf(false) }
+            MyApplicationTheme(amoled) {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -45,7 +46,17 @@ class MainActivity : ComponentActivity() {
                     if (settings) {
                         AlertDialog(
                             confirmButton = { },
-                            onDismissRequest = { settings = false }
+                            onDismissRequest = { settings = false },
+                            text = {
+                                Row {
+                                    Text("AMOLED", fontSize = 26.sp)
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Switch(
+                                        checked = amoled,
+                                        onCheckedChange = { amoled = it }
+                                    )
+                                }
+                            }
                         )
                     }
                     val kana = listOf("きょう", "ともだち", "ひる") // ...
