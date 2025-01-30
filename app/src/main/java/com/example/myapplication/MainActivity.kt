@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +32,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var settings by remember { mutableStateOf(false) }
                     var themes by remember { mutableStateOf(false) }
-                    var furigana by remember { mutableStateOf(false) }
                     TopAppBar(
                         title = { },
                         navigationIcon = {
@@ -55,17 +55,20 @@ class MainActivity : ComponentActivity() {
                                 .width(400.dp)
                                 .height(200.dp),
                             text = {
-                                Row {
-                                    TextButton(
-                                        content = { Text(
-                                            text = "Theme                            ",
-                                            fontSize = 26.sp,
-                                            modifier = Modifier.offset(y = 8.dp)) },
-                                        onClick = { themes = true },
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { themes = true }
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Theme",
+                                        fontSize = 26.sp,
                                     )
+                                    Spacer(modifier = Modifier.weight(1f))
                                     IconButton(
                                         onClick = { themes = true },
-                                        modifier = Modifier.padding(start = 16.dp, top = 12.dp)
                                     ) {
                                         Icon(
                                             Icons.Filled.KeyboardArrowRight,
@@ -73,16 +76,6 @@ class MainActivity : ComponentActivity() {
                                             modifier = Modifier.size(30.dp)
                                         )
                                     }
-                                }
-                                Row(
-                                    Modifier.offset(y = 90.dp)
-                                ) {
-                                    Text("  Furigana", fontSize = 26.sp)
-                                    Checkbox(
-                                        checked = furigana,
-                                        onCheckedChange = { furigana = it },
-                                        modifier = Modifier.offset(x = 188.dp)
-                                    )
                                 }
                             }
                         )
@@ -96,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                 .width(280.dp)
                                 .height(230.dp),
                             text = {
-                                Row {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text("AMOLED", fontSize = 26.sp)
                                     Spacer(modifier = Modifier.weight(1f))
                                     RadioButton(
