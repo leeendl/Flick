@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable { themes = true }
+                                        .border(2.dp, Color.DarkGray)
                                         .padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity() {
                                         onClick = { themes = true },
                                     ) {
                                         Icon(
-                                            Icons.Filled.KeyboardArrowRight,
+                                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                             contentDescription = "",
                                             modifier = Modifier.size(30.dp)
                                         )
