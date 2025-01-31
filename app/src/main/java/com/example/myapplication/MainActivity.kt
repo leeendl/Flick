@@ -102,15 +102,22 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    val kana = listOf("今日", "友達", "昼") // ...
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        var reKana by remember { mutableStateOf(kana.random()) }
+                        var reWord by remember { mutableStateOf(word.random()) }
+                        val kanji = reWord.first
+                        val kana = reWord.second
+
                         Text(
-                            text = reKana, fontSize = 60.sp,
+                            text = kana, fontSize = 30.sp,
+                            modifier = Modifier
+                                .padding(9.dp)
+                        )
+                        Text(
+                            text = kanji, fontSize = 60.sp,
                             modifier = Modifier
                                 .border(3.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
                                 .padding(9.dp)
@@ -120,17 +127,17 @@ class MainActivity : ComponentActivity() {
                             value = userInput,
                             onValueChange = {
                                 userInput = it
-                                if (it == reKana) {
-                                    reKana = kana.random()
+                                if (it == kanji || it == kana) {
+                                    reWord = word.random()
                                     userInput = ""
                                 }
                             },
                             textStyle = TextStyle(fontSize = 38.sp, textAlign = TextAlign.Center),
-                            isError = userInput != reKana && !reKana.startsWith(userInput),
+                            isError = !(userInput == kanji || userInput == kana) && !kanji.startsWith(userInput) && !kana.startsWith(userInput),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(reKana.length.dp * 60),
+                                .width(kanji.length.dp * 120),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
