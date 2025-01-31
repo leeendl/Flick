@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             textStyle = TextStyle(fontSize = 38.sp, textAlign = TextAlign.Center),
-                            isError = userInput != reKana && userInput.isNotEmpty(),
+                            isError = userInput != reKana && !reKana.startsWith(userInput),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .padding(32.dp)
