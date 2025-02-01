@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { furigana = true }
+                                            .clickable { furigana = !furigana }
                                             .border(2.dp, Color.DarkGray)
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
