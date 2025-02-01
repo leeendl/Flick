@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var settings by remember { mutableStateOf(false) }
                     var themes by remember { mutableStateOf(false) }
+                    var furigana by remember { mutableStateOf(false) }
                     TopAppBar(
                         title = { },
                         navigationIcon = {
@@ -54,28 +55,48 @@ class MainActivity : ComponentActivity() {
                             onDismissRequest = { settings = false },
                             modifier = Modifier
                                 .width(400.dp)
-                                .height(200.dp),
+                                .height(260.dp),
                             text = {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { themes = true }
-                                        .border(2.dp, Color.DarkGray)
-                                        .padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Theme",
-                                        fontSize = 26.sp,
-                                    )
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    IconButton(
-                                        onClick = { themes = true },
+                                Column { // Use a Column to arrange the rows vertically
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { themes = true }
+                                            .border(2.dp, Color.DarkGray)
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                            contentDescription = "",
-                                            modifier = Modifier.size(30.dp)
+                                        Text(
+                                            text = "Theme",
+                                            fontSize = 26.sp,
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        IconButton(
+                                            onClick = { themes = true },
+                                        ) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                                contentDescription = "",
+                                                modifier = Modifier.size(30.dp)
+                                            )
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { furigana = true }
+                                            .border(2.dp, Color.DarkGray)
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Furigana",
+                                            fontSize = 26.sp,
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Switch(
+                                            checked = furigana,
+                                            onCheckedChange = { furigana = it }
                                         )
                                     }
                                 }
@@ -108,36 +129,58 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
-                        val kanji = reWord.first
-                        val kana = reWord.second
-
-                        Text(
-                            text = kana, fontSize = 30.sp,
-                            modifier = Modifier
-                                .padding(9.dp)
-                        )
-                        Text(
-                            text = kanji, fontSize = 60.sp,
-                            modifier = Modifier
-                                .border(3.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
-                                .padding(9.dp)
-                        )
+                        if (furigana) {
+                            Box(
+                                modifier = Modifier
+                                    .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
+                                    .padding(9.dp)
+                            ) {
+                                val entrys = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
+                                    Pair(kanji.toString(),
+                                        reWord.furigana.split(" ").getOrElse(i) { "" })
+                                }
+                                Row {
+                                    entrys.forEach { (kanji, furigana) ->
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Text(
+                                                text = furigana,
+                                                fontSize = 20.sp,
+                                                modifier = Modifier.padding(bottom = 2.dp)
+                                            )
+                                            Text(
+                                                text = kanji,
+                                                fontSize = 60.sp,
+                                                modifier = Modifier.padding(bottom = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            Text(
+                                text = reWord.kanji, fontSize = 60.sp,
+                                modifier = Modifier
+                                    .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
+                                    .padding(9.dp)
+                            )
+                        }
                         var userInput by remember { mutableStateOf("") }
                         TextField(
                             value = userInput,
                             onValueChange = {
                                 userInput = it
-                                if (it == kanji || it == kana) {
+                                if (it == reWord.kanji || it == reWord.kana) {
                                     reWord = word.random()
                                     userInput = ""
                                 }
                             },
                             textStyle = TextStyle(fontSize = 38.sp, textAlign = TextAlign.Center),
-                            isError = !(userInput == kanji || userInput == kana) && !kanji.startsWith(userInput) && !kana.startsWith(userInput),
+                            isError = !(userInput == reWord.kanji || userInput == reWord.kana) && !reWord.kanji.startsWith(userInput) && !reWord.kana.startsWith(userInput),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(kanji.length.dp * 120),
+                                .width(reWord.kanji.length.dp * 120),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent

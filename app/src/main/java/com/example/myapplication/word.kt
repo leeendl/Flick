@@ -1,9 +1,11 @@
 package com.example.myapplication
 
-val word: List<Pair<String, String>> = listOf(
-    "大丈夫" to "だいじょうぶ",
-    "今日" to "きょう",
-    "食べる" to "たべる",
-    "見る" to "みる",
-    "行く" to "いく",
+data class readings(val kanji: String, val kana: String, val furigana: String)
+
+val word = listOf(
+    readings("大丈夫", "だいじょうぶ", "だい じょ うぶ"),
+    readings("今日", "きょう", "き ょう"),
+    readings("食べる", "たべる", "た"),
+    readings("見る", "みる", "み"),
+    readings("行く", "いく", "い"),
 )
