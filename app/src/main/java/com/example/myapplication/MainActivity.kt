@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -20,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -28,27 +28,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             var amoled by remember { mutableStateOf(false) }
             MyApplicationTheme(amoled) {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                Surface {
                     var settings by remember { mutableStateOf(false) }
                     var themes by remember { mutableStateOf(false) }
                     var furigana by remember { mutableStateOf(false) }
-                    TopAppBar(
-                        title = { },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = { settings = true },
-                                modifier = Modifier.padding(start = 16.dp, top = 12.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.Settings,
-                                    contentDescription = "",
-                                    modifier = Modifier.size(40.dp)
-                                )
-                            }
-                        }
-                    )
+                    IconButton(
+                        onClick = { settings = true },
+                        modifier = Modifier.padding(start = 16.dp, top = 30.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Settings,
+                            contentDescription = "",
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
                     if (settings) {
                         AlertDialog(
                             confirmButton = { },
@@ -57,12 +50,11 @@ class MainActivity : ComponentActivity() {
                                 .width(400.dp)
                                 .height(260.dp),
                             text = {
-                                Column { // Use a Column to arrange the rows vertically
+                                Column{
                                     Row(
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .clickable { themes = true }
-                                            .border(2.dp, Color.DarkGray)
+                                            .border(1.dp, Color.DarkGray)
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -83,9 +75,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                     Row(
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .clickable { furigana = !furigana }
-                                            .border(2.dp, Color.DarkGray)
+                                            .border(1.dp, Color.DarkGray)
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -105,14 +96,22 @@ class MainActivity : ComponentActivity() {
                     }
                     if (themes)
                     {
-                        AlertDialog(
-                            confirmButton = { },
-                            onDismissRequest = { themes = false },
-                            modifier = Modifier
-                                .width(280.dp)
-                                .height(230.dp),
-                            text = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                        val scope = rememberCoroutineScope()
+                        val sheetState = rememberModalBottomSheetState()
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                    if (!sheetState.isVisible) themes = false
+                                }
+                            },
+                            sheetState = sheetState
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp)
+                            ) {
+                                Row {
                                     Text("AMOLED", fontSize = 26.sp)
                                     Spacer(modifier = Modifier.weight(1f))
                                     RadioButton(
@@ -121,7 +120,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-                        )
+                        }
                     }
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -135,12 +134,12 @@ class MainActivity : ComponentActivity() {
                                     .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
                                     .padding(9.dp)
                             ) {
-                                val entrys = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
+                                val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
                                     Pair(kanji.toString(),
                                         reWord.furigana.split(" ").getOrElse(i) { "" })
                                 }
                                 Row {
-                                    entrys.forEach { (kanji, furigana) ->
+                                    entries.forEach { (kanji, furigana) ->
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             Text(
                                                 text = furigana,
@@ -180,7 +179,7 @@ class MainActivity : ComponentActivity() {
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(reWord.kanji.length.dp * 120),
+                                .width(reWord.kanji.length.dp * 80),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
