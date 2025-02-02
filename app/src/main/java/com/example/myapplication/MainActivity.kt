@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
-                        if (furigana) {
+                        if (furigana && reWord.furigana != "") {
                             Box(
                                 modifier = Modifier
                                     .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
