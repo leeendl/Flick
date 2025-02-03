@@ -1,4 +1,4 @@
-package com.example.myapplication
+package flick
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

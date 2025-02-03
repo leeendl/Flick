@@ -1,4 +1,4 @@
-package com.example.myapplication
+package flick
 
 data class Readings(val kanji: String, val kana: String, val furigana: String)
 
