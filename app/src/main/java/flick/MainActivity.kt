@@ -25,12 +25,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var amoled by remember { mutableStateOf(false) }
-            MyApplicationTheme(amoled) {
+            var dark by remember { mutableStateOf(true) }
+            MyApplicationTheme(dark) {
                 Surface {
                     var settings by remember { mutableStateOf(false) }
-                    var themes by remember { mutableStateOf(false) }
-                    var furigana by remember { mutableStateOf(false) }
                     IconButton(
                         onClick = { settings = true },
                         modifier = Modifier.padding(start = 16.dp, top = 30.dp)
@@ -41,6 +39,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.size(40.dp)
                         )
                     }
+                    var themes by remember { mutableStateOf(false) }
+                    var furigana by remember { mutableStateOf(false) }
                     if (settings) {
                         AlertDialog(
                             confirmButton = { },
@@ -93,8 +93,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    if (themes)
-                    {
+                    if (themes) {
                         val scope = rememberCoroutineScope()
                         val sheetState = rememberModalBottomSheetState()
                         ModalBottomSheet(
@@ -105,19 +104,29 @@ class MainActivity : ComponentActivity() {
                             },
                             sheetState = sheetState
                         ) {
-                            Column(
+                            Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(20.dp)
+                                    .clickable { dark = !dark }
+                                    .padding(16.dp)
                             ) {
-                                Row {
-                                    Text("AMOLED", fontSize = 26.sp)
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    RadioButton(
-                                        selected = amoled,
-                                        onClick = { amoled = !amoled }
-                                    )
-                                }
+                                Text("Dark", fontSize = 26.sp)
+                                Spacer(modifier = Modifier.weight(1f))
+                                RadioButton(
+                                    selected = dark,
+                                    onClick = { dark = true }
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .clickable { dark = !dark }
+                                    .padding(16.dp)
+                            ) {
+                                Text("Light", fontSize = 26.sp)
+                                Spacer(modifier = Modifier.weight(1f))
+                                RadioButton(
+                                    selected = !dark,
+                                    onClick = { dark = false }
+                                )
                             }
                         }
                     }
