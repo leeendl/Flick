@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.launch
@@ -128,41 +127,39 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
+                        Box(
+                            modifier = Modifier
+                                .border(1.dp, Color.DarkGray)
+                                .padding(9.dp)
+                        ) {
                         if (furigana && reWord.furigana != "") {
-                            Box(
-                                modifier = Modifier
-                                    .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
-                                    .padding(9.dp)
-                            ) {
                                 val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
                                     Pair(kanji.toString(),
                                         reWord.furigana.split(" ").getOrElse(i) { "" })
                                 }
-                                Row {
+                                Row(
+                                    modifier = Modifier.padding(bottom = 2.dp)
+                                ) {
                                     entries.forEach { (kanji, furigana) ->
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             Text(
                                                 text = furigana,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier.padding(bottom = 2.dp)
+                                                fontSize = 20.sp
                                             )
                                             Text(
                                                 text = kanji,
-                                                fontSize = 60.sp,
-                                                modifier = Modifier.padding(bottom = 2.dp)
+                                                fontSize = 60.sp
                                             )
                                         }
                                     }
                                 }
                             }
-                        }
-                        else {
-                            Text(
-                                text = reWord.kanji, fontSize = 60.sp,
-                                modifier = Modifier
-                                    .border(2.dp, Color.DarkGray, shape = RoundedCornerShape(8.dp))
-                                    .padding(9.dp)
-                            )
+                            else {
+                                Text(
+                                    text = reWord.kanji,
+                                    fontSize = 60.sp
+                                )
+                            }
                         }
                         var userInput by remember { mutableStateOf("") }
                         TextField(
@@ -174,12 +171,12 @@ class MainActivity : ComponentActivity() {
                                     userInput = ""
                                 }
                             },
-                            textStyle = TextStyle(fontSize = 38.sp, textAlign = TextAlign.Center),
+                            textStyle = TextStyle(fontSize = 40.sp),
                             isError = !(userInput == reWord.kanji || userInput == reWord.kana) && !reWord.kanji.startsWith(userInput) && !reWord.kana.startsWith(userInput),
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(6.dp),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(reWord.kanji.length.dp * 80),
+                                .width(reWord.kanji.length.dp * 64),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
