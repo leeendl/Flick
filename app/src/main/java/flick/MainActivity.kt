@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
@@ -53,7 +52,6 @@ class MainActivity : ComponentActivity() {
                                     Row(
                                         modifier = Modifier
                                             .clickable { themes = true }
-                                            .border(1.dp, Color.DarkGray)
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -75,7 +73,6 @@ class MainActivity : ComponentActivity() {
                                     Row(
                                         modifier = Modifier
                                             .clickable { furigana = !furigana }
-                                            .border(1.dp, Color.DarkGray)
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -136,39 +133,50 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
+                        var wordLookup by remember { mutableStateOf(false) }
                         Box(
                             modifier = Modifier
                                 .border(1.dp, Color.DarkGray)
                                 .padding(9.dp)
-                        ) {
-                        if (furigana && reWord.furigana != "") {
-                                val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
-                                    Pair(kanji.toString(),
-                                        reWord.furigana.split(" ").getOrElse(i) { "" })
+                                .clickable {
+                                    wordLookup = true
                                 }
-                                Row(
-                                    modifier = Modifier.padding(bottom = 2.dp)
-                                ) {
-                                    entries.forEach { (kanji, furigana) ->
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        ) {
+                            val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
+                                Pair(kanji.toString(),
+                                    reWord.furigana.split(" ").getOrElse(i) { "" })
+                            }
+                            Row(
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            ) {
+                                entries.forEach { (kanji, furi) ->
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        if (furigana) {
                                             Text(
-                                                text = furigana,
+                                                text = furi,
                                                 fontSize = 20.sp
                                             )
-                                            Text(
-                                                text = kanji,
-                                                fontSize = 60.sp
-                                            )
                                         }
+                                        Text(
+                                            text = if (reWord.kanji.isEmpty()) reWord.kana else kanji,
+                                            fontSize = 60.sp
+                                        )
                                     }
                                 }
                             }
-                            else {
-                                Text(
-                                    text = reWord.kanji,
-                                    fontSize = 60.sp
-                                )
-                            }
+                        }
+                        if (wordLookup)
+                        {
+                            AlertDialog(
+                                onDismissRequest = { wordLookup = false },
+                                confirmButton = { },
+                                text = {
+                                    Text(
+                                        text = reWord.english,
+                                        fontSize = 40.sp
+                                    )
+                                }
+                            )
                         }
                         var userInput by remember { mutableStateOf("") }
                         TextField(
@@ -182,7 +190,6 @@ class MainActivity : ComponentActivity() {
                             },
                             textStyle = TextStyle(fontSize = 40.sp),
                             isError = !(userInput == reWord.kanji || userInput == reWord.kana) && !reWord.kanji.startsWith(userInput) && !reWord.kana.startsWith(userInput),
-                            shape = RoundedCornerShape(6.dp),
                             modifier = Modifier
                                 .padding(32.dp)
                                 .width(reWord.kanji.length.dp * 64),
