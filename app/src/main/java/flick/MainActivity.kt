@@ -59,6 +59,11 @@ class MainActivity : ComponentActivity() {
                                             fontSize = 26.sp,
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
+                                        Text(
+                                            text = if (dark) "Dark" else "Light",
+                                            color = Color.Gray,
+                                            fontSize = 18.sp,
+                                        )
                                         IconButton(
                                             onClick = { themes = true },
                                         ) {
