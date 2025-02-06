@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.Dialog
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.launch
 
@@ -39,16 +40,17 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     var themes by remember { mutableStateOf(false) }
-                    var furigana by remember { mutableStateOf(false) }
+                    var showFurigana by remember { mutableStateOf(false) }
                     if (settings) {
-                        AlertDialog(
-                            confirmButton = { },
-                            onDismissRequest = { settings = false },
-                            modifier = Modifier
-                                .width(400.dp)
-                                .height(260.dp),
-                            text = {
-                                Column{
+                        Dialog(
+                            onDismissRequest = { settings = false }
+                        ) {
+                            Surface(
+                                modifier = Modifier
+                                    .width(380.dp),
+                                shape = MaterialTheme.shapes.medium
+                            ) {
+                                Column {
                                     Row(
                                         modifier = Modifier
                                             .clickable { themes = true }
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                     Row(
                                         modifier = Modifier
-                                            .clickable { furigana = !furigana }
+                                            .clickable { showFurigana = !showFurigana }
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -82,13 +84,13 @@ class MainActivity : ComponentActivity() {
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
                                         Switch(
-                                            checked = furigana,
-                                            onCheckedChange = { furigana = it }
+                                            checked = showFurigana,
+                                            onCheckedChange = { showFurigana = it }
                                         )
                                     }
                                 }
                             }
-                        )
+                        }
                     }
                     if (themes) {
                         val scope = rememberCoroutineScope()
@@ -136,7 +138,7 @@ class MainActivity : ComponentActivity() {
                         var wordLookup by remember { mutableStateOf(false) }
                         Box(
                             modifier = Modifier
-                                .border(1.dp, Color.DarkGray)
+                                .border(2.dp, Color.DarkGray, MaterialTheme.shapes.medium)
                                 .padding(9.dp)
                                 .clickable {
                                     wordLookup = true
@@ -149,11 +151,11 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier.padding(bottom = 2.dp)
                             ) {
-                                entries.forEach { (kanji, furi) ->
+                                entries.forEach { (kanji, furigana) ->
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        if (furigana) {
+                                        if (showFurigana) {
                                             Text(
-                                                text = furi,
+                                                text = furigana,
                                                 fontSize = 20.sp
                                             )
                                         }
@@ -167,16 +169,22 @@ class MainActivity : ComponentActivity() {
                         }
                         if (wordLookup)
                         {
-                            AlertDialog(
-                                onDismissRequest = { wordLookup = false },
-                                confirmButton = { },
-                                text = {
+                            Dialog(
+                                onDismissRequest = { wordLookup = false }
+                            ) {
+                                Surface(
+                                    shape = MaterialTheme.shapes.small,
+                                    modifier = Modifier
+                                        .width(240.dp)
+                                ) {
                                     Text(
                                         text = reWord.english,
-                                        fontSize = 40.sp
+                                        fontSize = 40.sp,
+                                        lineHeight = 46.sp,
+                                        modifier = Modifier.padding(20.dp)
                                     )
                                 }
-                            )
+                            }
                         }
                         var userInput by remember { mutableStateOf("") }
                         TextField(
@@ -192,7 +200,7 @@ class MainActivity : ComponentActivity() {
                             isError = !(userInput == reWord.kanji || userInput == reWord.kana) && !reWord.kanji.startsWith(userInput) && !reWord.kana.startsWith(userInput),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(reWord.kanji.length.dp * 64),
+                                .width(reWord.kanji.length.dp * 72),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
