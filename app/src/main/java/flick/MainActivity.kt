@@ -6,18 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
-import com.example.myapplication.ui.theme.MyApplicationTheme
+import flick.ui.theme.Theme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -26,7 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             var dark by remember { mutableStateOf(true) }
-            MyApplicationTheme(dark) {
+            Theme(dark) {
                 Surface {
                     var settings by remember { mutableStateOf(false) }
                     IconButton(
@@ -34,9 +32,8 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(start = 16.dp, top = 30.dp)
                     ) {
                         Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = "",
-                            modifier = Modifier.size(40.dp)
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = ""
                         )
                     }
                     var themes by remember { mutableStateOf(false) }
@@ -66,9 +63,8 @@ class MainActivity : ComponentActivity() {
                                             onClick = { themes = true },
                                         ) {
                                             Icon(
-                                                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                                contentDescription = "",
-                                                modifier = Modifier.size(30.dp)
+                                                painterResource(R.drawable.ic_keyboard_arrow_right),
+                                                contentDescription = ""
                                             )
                                         }
                                     }
@@ -144,29 +140,37 @@ class MainActivity : ComponentActivity() {
                                     wordLookup = true
                                 }
                         ) {
-                            val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
-                                Pair(kanji.toString(),
-                                    reWord.furigana.split(" ").getOrElse(i) { "" })
-                            }
-                            Row(
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            ) {
-                                entries.forEach { (kanji, furigana) ->
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        if (showFurigana) {
+                            if (reWord.furigana.isEmpty()) {
+                                Text(
+                                    text = reWord.kana,
+                                    fontSize = 60.sp
+                                )
+                            } else {
+                                val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
+                                    Pair(kanji.toString(),
+                                        reWord.furigana.split(" ").getOrElse(i) { "" })
+                                }
+                                Row(
+                                    modifier = Modifier.padding(bottom = 2.dp)
+                                ) {
+                                    entries.forEach { (kanji, furigana) ->
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            if (showFurigana) {
+                                                Text(
+                                                    text = furigana,
+                                                    fontSize = 20.sp
+                                                )
+                                            }
                                             Text(
-                                                text = furigana,
-                                                fontSize = 20.sp
+                                                text = kanji,
+                                                fontSize = 60.sp
                                             )
                                         }
-                                        Text(
-                                            text = if (reWord.kanji.isEmpty()) reWord.kana else kanji,
-                                            fontSize = 60.sp
-                                        )
                                     }
                                 }
                             }
                         }
+
                         if (wordLookup)
                         {
                             Dialog(

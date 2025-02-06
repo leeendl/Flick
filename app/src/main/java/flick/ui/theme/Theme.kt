@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme
+package flick.ui.theme
 
 import android.os.Build
 import androidx.compose.material3.*
@@ -6,16 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun MyApplicationTheme(
+fun Theme(
     darkTheme: Boolean,
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        // Dynamic color is available on Android 12+
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkColorScheme(LocalContext.current)
+            else dynamicLightColorScheme(LocalContext.current)
         }
         darkTheme -> darkColorScheme()
         else -> lightColorScheme()
@@ -23,7 +22,6 @@ fun MyApplicationTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography(),
         content = content
     )
 }
