@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
                                     wordLookup = true
                                 }
                         ) {
-                            if (reWord.furigana.isEmpty()) {
+                            if (!reWord.kana.contains(" ")) {
                                 Text(
                                     text = reWord.kana,
                                     fontSize = 60.sp
@@ -153,7 +153,7 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
                                     Pair(kanji.toString(),
-                                        reWord.furigana.split(" ").getOrElse(i) { "" })
+                                        reWord.kana.split(" ").getOrElse(i) { "" })
                                 }
                                 Row(
                                     modifier = Modifier.padding(bottom = 2.dp)
