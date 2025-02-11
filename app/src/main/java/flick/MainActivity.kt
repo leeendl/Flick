@@ -1,5 +1,6 @@
 package flick
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,8 +37,18 @@ class MainActivity : ComponentActivity() {
                             contentDescription = ""
                         )
                     }
+                    val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+                    var showFurigana by remember {
+                        mutableStateOf(sharedPreferences.getBoolean("furigana", false))
+                    }
+                    LaunchedEffect(Unit) {
+                        sharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
+                            if (key == "furigana") {
+                                showFurigana = sharedPreferences.getBoolean("furigana", false)
+                            }
+                        }
+                    }
                     var themes by remember { mutableStateOf(false) }
-                    var showFurigana by remember { mutableStateOf(false) }
                     if (settings) {
                         Dialog(
                             onDismissRequest = { settings = false }
@@ -75,7 +86,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                     Row(
                                         modifier = Modifier
-                                            .clickable { showFurigana = !showFurigana }
+                                            .clickable {
+                                                sharedPreferences.edit()
+                                                    .putBoolean("furigana", !showFurigana)
+                                                    .apply()
+                                            }
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -86,7 +101,11 @@ class MainActivity : ComponentActivity() {
                                         Spacer(modifier = Modifier.weight(1f))
                                         Switch(
                                             checked = showFurigana,
-                                            onCheckedChange = { showFurigana = it }
+                                            onCheckedChange = {
+                                                sharedPreferences.edit()
+                                                    .putBoolean("furigana", it)
+                                                    .apply()
+                                            }
                                         )
                                     }
                                 }
@@ -155,15 +174,13 @@ class MainActivity : ComponentActivity() {
                                     Pair(kanji.toString(),
                                         reWord.kana.split(" ").getOrElse(i) { "" })
                                 }
-                                Row(
-                                    modifier = Modifier.padding(bottom = 2.dp)
-                                ) {
+                                Row {
                                     entries.forEach { (kanji, furigana) ->
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             if (showFurigana) {
                                                 Text(
                                                     text = furigana,
-                                                    fontSize = 20.sp
+                                                    fontSize = 18.sp
                                                 )
                                             }
                                             Text(
@@ -176,8 +193,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        if (wordLookup)
-                        {
+                        if (wordLookup) {
                             Dialog(
                                 onDismissRequest = { wordLookup = false }
                             ) {
