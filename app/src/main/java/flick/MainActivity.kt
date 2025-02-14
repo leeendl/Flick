@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -20,6 +22,7 @@ import flick.ui.theme.Theme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val experimental = false // features that are still in work
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,16 +70,16 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Text(
                                             text = "Theme",
-                                            fontSize = 26.sp,
+                                            fontSize = 26.sp
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
                                         Text(
                                             text = if (dark) "Dark" else "Light",
                                             color = Color.Gray,
-                                            fontSize = 18.sp,
+                                            fontSize = 18.sp
                                         )
                                         IconButton(
-                                            onClick = { themes = true },
+                                            onClick = { themes = true }
                                         ) {
                                             Icon(
                                                 painterResource(R.drawable.ic_keyboard_arrow_right),
@@ -96,7 +99,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Text(
                                             text = "Furigana",
-                                            fontSize = 26.sp,
+                                            fontSize = 26.sp
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
                                         Switch(
@@ -183,10 +186,28 @@ class MainActivity : ComponentActivity() {
                                                     fontSize = 18.sp
                                                 )
                                             }
-                                            Text(
-                                                text = kanji,
-                                                fontSize = 60.sp
-                                            )
+                                            Box {
+                                                Text(
+                                                    text = kanji,
+                                                    fontSize = 60.sp
+                                                )
+                                                if (experimental)
+                                                if (!hasKana(kanji)) {
+                                                    Canvas(
+                                                        modifier = Modifier
+                                                            .matchParentSize()
+                                                            .padding(top = 18.dp + 60.dp),
+                                                        onDraw = {
+                                                            drawLine(
+                                                                color = Color(0xFF82DE25),
+                                                                start = Offset(0f, 0f),
+                                                                end = Offset(size.width, 0f),
+                                                                strokeWidth = 4f
+                                                            )
+                                                        }
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }
