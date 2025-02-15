@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val experimental = false // features that are still in work
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +42,18 @@ class MainActivity : ComponentActivity() {
                             contentDescription = ""
                         )
                     }
-                    val sharedPreferences = remember { getSharedPreferences("settings", Context.MODE_PRIVATE) }
+                    val sharedPreferences =
+                        remember { getSharedPreferences("settings", Context.MODE_PRIVATE) }
                     var showFurigana by remember {
                         mutableStateOf(sharedPreferences.getBoolean("furigana", false))
                     }
                     DisposableEffect(sharedPreferences) {
-                        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                            if (key == "furigana") {
-                                showFurigana = sharedPreferences.getBoolean("furigana", false)
+                        val listener =
+                            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                                if (key == "furigana") {
+                                    showFurigana = sharedPreferences.getBoolean("furigana", false)
+                                }
                             }
-                        }
                         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
                         onDispose {
                             sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
@@ -164,6 +167,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
                         var wordLookup by remember { mutableStateOf(false) }
+                        val kana =
+                            if (reWord.furigana.isNotEmpty()) getKana(reWord.kanji, reWord.furigana)
+                            else reWord.kanji
                         Box(
                             modifier = Modifier
                                 .border(2.dp, Color.DarkGray, MaterialTheme.shapes.medium)
@@ -172,16 +178,17 @@ class MainActivity : ComponentActivity() {
                                     wordLookup = true
                                 }
                         ) {
-                            if (!hasKanji(reWord.kanji)) {
+                            if (!reWord.kanji.any { it.isKanji() }) {
                                 Text(
-                                    text = reWord.kana,
+                                    text = kana,
                                     fontSize = 60.sp
                                 )
                             } else {
-                                val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
-                                    Pair(kanji.toString(),
-                                        reWord.furigana.split(" ").getOrElse(i) { "" })
-                                }
+                                val entries =
+                                    reWord.kanji.toCharArray().mapIndexed { i, kanji ->
+                                        Pair(kanji.toString(),
+                                            reWord.furigana.split(" ").getOrElse(i) { "" })
+                                    }
                                 Row {
                                     entries.forEach { (kanji, furigana) ->
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -196,21 +203,25 @@ class MainActivity : ComponentActivity() {
                                                     text = kanji,
                                                     fontSize = 60.sp
                                                 )
-                                                if (experimental)
-                                                if (!hasKana(kanji)) {
-                                                    Canvas(
-                                                        modifier = Modifier
-                                                            .matchParentSize()
-                                                            .padding(top = 18.dp + 60.dp),
-                                                        onDraw = {
-                                                            drawLine(
-                                                                color = Color(0xFF82DE25),
-                                                                start = Offset(0f, 0f),
-                                                                end = Offset(size.width, 0f),
-                                                                strokeWidth = 4f
-                                                            )
-                                                        }
-                                                    )
+                                                if (experimental) {
+                                                    if (!kanji.any { it.isKana() }) {
+                                                        Canvas(
+                                                            modifier = Modifier
+                                                                .matchParentSize()
+                                                                .padding(top = 18.dp + 60.dp),
+                                                            onDraw = {
+                                                                drawLine(
+                                                                    color = Color(0xFF82DE25),
+                                                                    start = Offset(0f, 0f),
+                                                                    end = Offset(
+                                                                        size.width,
+                                                                        0f
+                                                                    ),
+                                                                    strokeWidth = 4f
+                                                                )
+                                                            }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -218,7 +229,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-
                         if (wordLookup) {
                             Dialog(
                                 onDismissRequest = { wordLookup = false }
@@ -242,13 +252,13 @@ class MainActivity : ComponentActivity() {
                             value = userInput,
                             onValueChange = {
                                 userInput = it
-                                if (it == reWord.kanji || it == reWord.kana) {
+                                if (it == reWord.kanji || it == kana) {
                                     reWord = word.random()
                                     userInput = ""
                                 }
                             },
                             textStyle = TextStyle(fontSize = 40.sp),
-                            isError = !(userInput == reWord.kanji || userInput == reWord.kana) && !reWord.kanji.startsWith(userInput) && !reWord.kana.startsWith(userInput),
+                            isError = !(userInput == reWord.kanji || userInput == kana) && !reWord.kanji.startsWith(userInput) && !kana.startsWith(userInput),
                             modifier = Modifier
                                 .padding(32.dp)
                                 .width(reWord.kanji.length.dp * 72),
