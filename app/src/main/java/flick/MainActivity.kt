@@ -1,6 +1,7 @@
 package flick
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,15 +41,19 @@ class MainActivity : ComponentActivity() {
                             contentDescription = ""
                         )
                     }
-                    val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+                    val sharedPreferences = remember { getSharedPreferences("settings", Context.MODE_PRIVATE) }
                     var showFurigana by remember {
                         mutableStateOf(sharedPreferences.getBoolean("furigana", false))
                     }
-                    LaunchedEffect(Unit) {
-                        sharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
+                    DisposableEffect(sharedPreferences) {
+                        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                             if (key == "furigana") {
                                 showFurigana = sharedPreferences.getBoolean("furigana", false)
                             }
+                        }
+                        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+                        onDispose {
+                            sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
                         }
                     }
                     var themes by remember { mutableStateOf(false) }
@@ -167,7 +172,7 @@ class MainActivity : ComponentActivity() {
                                     wordLookup = true
                                 }
                         ) {
-                            if (!reWord.kana.contains(" ")) {
+                            if (!hasKanji(reWord.kanji)) {
                                 Text(
                                     text = reWord.kana,
                                     fontSize = 60.sp
@@ -175,7 +180,7 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 val entries = reWord.kanji.toCharArray().mapIndexed { i, kanji ->
                                     Pair(kanji.toString(),
-                                        reWord.kana.split(" ").getOrElse(i) { "" })
+                                        reWord.furigana.split(" ").getOrElse(i) { "" })
                                 }
                                 Row {
                                     entries.forEach { (kanji, furigana) ->
