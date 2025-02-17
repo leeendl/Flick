@@ -57,7 +57,9 @@ val word = arrayOf(
 )
 
 fun getKana(kanji: String, furigana: String): String {
-    val returnList = StringBuilder()
+    val returnList = StringBuilder(
+        capacity = maxOf(kanji.length, furigana.count { it == ' ' } + 1)
+    )
     val spaces = furigana.split(" ")
 
     for (i in 0 until maxOf(kanji.length, spaces.size)) {

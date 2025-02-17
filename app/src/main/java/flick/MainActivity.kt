@@ -173,7 +173,7 @@ class MainActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier
                                 .border(2.dp, Color.DarkGray, MaterialTheme.shapes.medium)
-                                .padding(9.dp)
+                                .padding(16.dp)
                                 .clickable {
                                     wordLookup = true
                                 }
@@ -195,7 +195,7 @@ class MainActivity : ComponentActivity() {
                                             if (showFurigana) {
                                                 Text(
                                                     text = furigana,
-                                                    fontSize = 18.sp
+                                                    fontSize = 22.sp
                                                 )
                                             }
                                             Box {
@@ -261,7 +261,7 @@ class MainActivity : ComponentActivity() {
                             isError = !(userInput == reWord.kanji || userInput == kana) && !reWord.kanji.startsWith(userInput) && !kana.startsWith(userInput),
                             modifier = Modifier
                                 .padding(32.dp)
-                                .width(reWord.kanji.length.dp * 72),
+                                .width(kana.length.dp * 72),
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
