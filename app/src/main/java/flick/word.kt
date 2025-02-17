@@ -14,10 +14,8 @@ data class Readings(
 val word = arrayOf(
     Readings("大丈夫", "だい じょう ぶ", "(is) all right; OK", 5u),
     Readings("下さい", "くだ ", "please (request)", 5u),
-    Readings("お願いします", " ねが ", "please", 2u),
-    Readings("今", "いま", "now", 5u),
+    Readings("お願い", " ねが ", "please", 2u),
     Readings("今日", "き ょう", "today", 5u),
-    Readings("月", "つき", "month", 3u),
     Readings("先月", "せん げつ", "last month", 5u),
     Readings("食べる", "た ", "(to) eat", 5u),
     Readings("お皿", " さら", "dish", 5u),
@@ -37,42 +35,45 @@ val word = arrayOf(
     Readings("仕事", "し ごと", "work", 5u),
     Readings("会社", "かい しゃ", "workplace", 5u),
     Readings("会議", "かい ぎ", "meeting", 4u),
-    Readings("色", "いろ ", "color", 5u),
-    Readings("赤", "あか ", "red", 5u),
-    Readings("緑", "みどり ", "green", 5u),
-    Readings("青", "あお ", "blue; green", 5u),
-    Readings("男", "おとこ ", "male", 5u),
-    Readings("女", "おんな ", "female", 5u),
-    Readings("子", "こ ", "young; child", 5u),
-    Readings("目", "め ", "(body part) eye", 5u),
-    Readings("手", "て ", "(body part) hand", 5u),
-    Readings("足", "あし ", "(body part) leg", 5u),
+    Readings("色", "いろ", "color", 5u),
+    Readings("赤", "あか", "red", 5u),
+    Readings("緑", "みどり", "green", 5u),
+    Readings("青", "あお", "blue; green", 5u),
+    Readings("男", "おとこ", "male", 5u),
+    Readings("女", "おんな", "female", 5u),
+    Readings("子", "こ", "young; child", 5u),
+    Readings("目", "め", "(body part) eye", 5u),
+    Readings("手", "て", "(body part) hand", 5u),
+    Readings("足", "あし", "(body part) leg", 5u),
     Readings("馬鹿", "ば か", "idiot", 3u),
     Readings("中心", "ちゅう しん", "center; middle", 3u),
     Readings("病気", "びょう き", "illness", 5u),
     Readings("木", "き", "tree", 5u),
 
-    Readings("いい", "", "good", 5u),
-    Readings("いつ", "", "when", 5u),
-    Readings("でも", "", "but", 5u),
-    Readings("じゃあ", "", "well then; so", 5u)
+    Readings("", "いい", "good", 5u),
+    Readings("", "いつ", "when", 5u),
+    Readings("", "でも", "but", 5u),
+    Readings("", "じゃあ", "well then; so", 5u)
 )
 
 fun getKana(kanji: String, furigana: String): String {
     val returnList = StringBuilder()
     val spaces = furigana.split(" ")
-    var i = 0
-    spaces.forEach { kana ->
-        if (kana.isEmpty()) {
-            while (i < kanji.length && kanji[i].isKana()) {
+
+    for (i in 0 until maxOf(kanji.length, spaces.size)) {
+        if (i < spaces.size) {
+            if (spaces[i].isEmpty() && i < kanji.length) {
                 returnList.append(kanji[i])
-                i++
             }
-        } else {
-            returnList.append(kana)
-            i++
+            else if (spaces[i].all { it.isKana() }) {
+                returnList.append(spaces[i])
+            }
+        }
+        else if (i < kanji.length) {
+            returnList.append(kanji[i])
         }
     }
+
     return returnList.toString()
 }
 

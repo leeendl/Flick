@@ -168,8 +168,8 @@ class MainActivity : ComponentActivity() {
                         var reWord by remember { mutableStateOf(word.random()) }
                         var wordLookup by remember { mutableStateOf(false) }
                         val kana =
-                            if (reWord.furigana.isNotEmpty()) getKana(reWord.kanji, reWord.furigana)
-                            else reWord.kanji
+                            if (reWord.furigana.contains(" ")) getKana(reWord.kanji, reWord.furigana)
+                            else reWord.furigana
                         Box(
                             modifier = Modifier
                                 .border(2.dp, Color.DarkGray, MaterialTheme.shapes.medium)
