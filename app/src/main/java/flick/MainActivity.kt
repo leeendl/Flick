@@ -167,8 +167,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         var reWord by remember { mutableStateOf(word.random()) }
                         var wordLookup by remember { mutableStateOf(false) }
+                        val spaces = reWord.furigana.split(" ")
                         val kana =
-                            if (reWord.furigana.contains(" ")) getKana(reWord.kanji, reWord.furigana)
+                            if (reWord.furigana.contains(" ")) getKana(reWord.kanji, spaces)
                             else reWord.furigana
                         Box(
                             modifier = Modifier
@@ -184,11 +185,9 @@ class MainActivity : ComponentActivity() {
                                     fontSize = 60.sp
                                 )
                             } else {
-                                val entries =
-                                    reWord.kanji.toCharArray().mapIndexed { i, kanji ->
-                                        Pair(kanji.toString(),
-                                            reWord.furigana.split(" ").getOrElse(i) { "" })
-                                    }
+                                val entries = reWord.kanji.mapIndexed { i, kanji ->
+                                    kanji.toString() to spaces.getOrElse(i) { "" }
+                                }
                                 Row {
                                     entries.forEach { (kanji, furigana) ->
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -208,11 +207,16 @@ class MainActivity : ComponentActivity() {
                                                         Canvas(
                                                             modifier = Modifier
                                                                 .matchParentSize()
-                                                                .padding(top = 18.dp + 60.dp),
+                                                                .padding(top = 18.dp + 60.dp + 4.dp),
                                                             onDraw = {
                                                                 drawLine(
-                                                                    color = Color(0xFF82DE25),
-                                                                    start = Offset(0f, 0f),
+                                                                    color = when (reWord.jpl) {
+                                                                        5u.toUByte() -> Color(0xFF82DE25)
+                                                                        3u.toUByte() -> Color(0xFFE0C425)
+                                                                        3u.toUByte() -> Color(0xFFE08625)
+                                                                        else -> Color.Transparent
+                                                                    },
+                                                                    start = Offset.Zero,
                                                                     end = Offset(
                                                                         size.width,
                                                                         0f
